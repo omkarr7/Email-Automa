@@ -1,0 +1,16 @@
+company_score:
+  funding_recent: 15
+  actively_hiring: 20
+  expansion: 15
+  target_city: 10
+  startup: 10
+  data_heavy: 15
+  candidate_domain_match: 15
+
+role_score:
+  exact_role_match: 25
+  skills_match: 25
+  experience_match: 20
+  location_match: 10
+  technology_match: 10
+  domain_match: 10

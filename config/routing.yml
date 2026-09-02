@@ -1,0 +1,28 @@
+providers:
+  gemini:
+    enabled: true
+    priority:
+      research: 1
+      generation: 1
+      critic: 2
+  groq:
+    enabled: true
+    priority:
+      research: 2
+      generation: 2
+      critic: 1
+  openrouter:
+    enabled: true
+    priority:
+      research: 3
+      generation: 3
+      critic: 3
+
+quality:
+  min_company_relevance: 75
+  min_person_relevance: 75
+  min_candidate_fit: 75
+  min_specificity: 70
+  min_factuality: 90
+  max_genericity: 30
+  max_generation_attempts: 3

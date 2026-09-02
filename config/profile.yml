@@ -1,0 +1,55 @@
+candidate:
+  name: "Your Name"
+  email: "you@example.com"
+  phone: "+00 0000 000000"
+  linkedin: "https://www.linkedin.com/in/your-handle/"
+  github: "https://github.com/your-handle"
+
+education:
+  - "MSc Data Science and Analytics, University of Leeds"
+  - "Computer Engineering"
+
+experience:
+  axion:
+    title: "Data Analyst"
+    company: "Your Company"
+    areas:
+      - data governance
+      - data quality
+      - sensitive data
+      - data management
+      - policies
+      - controls
+      - frameworks
+      - analytics
+      - automation
+      - Python
+      - SQL
+
+  met_office:
+    organisation: "Previous Employer"
+    areas:
+      - machine learning
+      - rainfall analysis
+      - research
+      - R
+      - statistics
+      - unsupervised learning
+
+skills:
+  programming: [Python, SQL, R]
+  data: [Pandas, NumPy, PySpark, ETL, "data pipelines", MySQL]
+  ml: ["machine learning", NLP, PyTorch, LLMs]
+  governance: ["data governance", "data quality", "data management", controls]
+
+target_roles:
+  - Data Analyst
+  - Data Scientist
+  - Data Engineer
+  - Analytics Engineer
+  - ML Engineer
+  - AI Engineer
+  - BI Analyst
+  - Data Governance Analyst
+  - Product Analyst
+  - Data Operations Analyst

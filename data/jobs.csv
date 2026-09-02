@@ -1,0 +1,6 @@
+company,job_title,job_url,location,description,years_required,active
+Atlan,Data Engineer,REPLACE_WITH_JOB_URL,Bengaluru,Data engineering and governance,2,true
+Drona Pay,Data Engineer,REPLACE_WITH_JOB_URL,Mumbai,Python SQL data engineering,1,true
+Jash Data Sciences,Data Scientist,REPLACE_WITH_JOB_URL,Pune,Data science analytics,2,true
+PriceLabs,Graduate Data Science Programme,REPLACE_WITH_JOB_URL,Pune,Graduate data science analytics,0,true
+Entrupy,ML Intern,REPLACE_WITH_JOB_URL,Bengaluru,Machine learning and data,0,true

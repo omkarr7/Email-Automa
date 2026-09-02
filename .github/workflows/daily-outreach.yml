@@ -1,0 +1,102 @@
+name: Daily Outreach
+
+on:
+  workflow_dispatch:
+    inputs:
+      send_enabled:
+        description: "Send prepared emails after generating them"
+        required: false
+        default: "false"
+      run_discovery:
+        description: "Refresh public evidence before preparing emails"
+        required: false
+        default: "true"
+  schedule:
+    - cron: "37 3 * * 1-5"
+      timezone: "Asia/Kolkata"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-outreach
+  cancel-in-progress: false
+
+jobs:
+  prepare-and-optionally-send:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONUNBUFFERED: "1"
+      DRY_RUN: "true"
+      SEND_ENABLED: ${{ github.event.inputs.send_enabled || 'false' }}
+      GMAIL_ADDRESS: ${{ secrets.GMAIL_ADDRESS }}
+      GMAIL_CREDENTIALS_JSON: ${{ secrets.GMAIL_CREDENTIALS_JSON }}
+      GMAIL_TOKEN_JSON: ${{ secrets.GMAIL_TOKEN_JSON }}
+      RESUME_PDF_BASE64: ${{ secrets.RESUME_PDF_BASE64 }}
+      GOOGLE_CSE_API_KEY: ${{ secrets.GOOGLE_CSE_API_KEY }}
+      GOOGLE_CSE_ID: ${{ secrets.GOOGLE_CSE_ID }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GEMINI_MODEL: ${{ secrets.GEMINI_MODEL || 'gemini-2.5-flash' }}
+      NUDGE_AFTER_DAYS: ${{ secrets.NUDGE_AFTER_DAYS || '6' }}
+      DAILY_INITIAL_LIMIT: ${{ secrets.DAILY_INITIAL_LIMIT || '5' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Materialize Gmail OAuth files
+        if: ${{ env.GMAIL_CREDENTIALS_JSON != '' }}
+        run: |
+          mkdir -p data
+          printf '%s' "$GMAIL_CREDENTIALS_JSON" > credentials.json
+          if [ -n "$GMAIL_TOKEN_JSON" ]; then
+            printf '%s' "$GMAIL_TOKEN_JSON" > data/gmail_token.json
+          fi
+
+      - name: Materialize resume PDF
+        if: ${{ env.RESUME_PDF_BASE64 != '' }}
+        run: |
+          mkdir -p data
+          printf '%s' "$RESUME_PDF_BASE64" | base64 -d > data/resume.pdf
+
+      - name: Initialize database
+        run: python -m src.main --mode init
+
+      - name: Refresh public evidence
+        if: ${{ github.event_name == 'schedule' || github.event.inputs.run_discovery != 'false' }}
+        run: python -m src.discovery
+
+      - name: Prepare outreach drafts
+        run: python -m src.main --mode prepare
+
+      - name: Send prepared outreach
+        if: ${{ env.SEND_ENABLED == 'true' }}
+        run: python -m src.main --mode send
+
+      - name: Upload prepared outbox
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: outbox-${{ github.run_id }}
+          path: |
+            outbox/
+            data/discovered_evidence.csv
+            data/evidence.db
+            data/outreach.db
+          if-no-files-found: warn
+
+      - name: Persist state back to repository
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "chore: persist outreach pipeline state"
+          git push

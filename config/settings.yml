@@ -1,0 +1,7 @@
+daily_initial_limit: 5
+daily_nudge_limit: 3
+followup_days: 6
+minimum_personalisation_confidence: 0.75
+minimum_outreach_score: 60
+auto_send_score: 80
+dry_run: true

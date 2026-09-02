@@ -1,0 +1,53 @@
+name: Weekly Company Discovery
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "52 2 * * 1"
+      timezone: "Asia/Kolkata"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: weekly-company-discovery
+  cancel-in-progress: false
+
+jobs:
+  discover-companies:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONUNBUFFERED: "1"
+      SEARCH_API_KEY: ${{ secrets.SEARCH_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run weekly company discovery
+        run: python -m src.discovery.weekly
+
+      - name: Upload discovery database
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-company-discovery-${{ github.run_id }}
+          path: |
+            data/outreach.db
+          if-no-files-found: warn
+
+      - name: Persist state back to repository
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "chore: weekly company discovery"
+          git push
