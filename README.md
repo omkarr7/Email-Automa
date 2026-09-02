@@ -1,8 +1,11 @@
 # Job Outreach Automation
 
 A cautious, resumable job-opportunity outreach pipeline for India (Bengaluru, Mumbai, Pune).
+But you can tailor it to your region and your job preferences. 😌
+
+
 It now runs in a free-by-default mode: no paid APIs are required for the core
-prepare, send, monitor and nudge workflow.
+prepare, send, monitor and nudge workflow. (You can add your paid APIs for best results)
 
 ## What it does
 
